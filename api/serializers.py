@@ -16,19 +16,34 @@ class PolicySerializer(serializers.ModelSerializer):
 
 # Claim serializer
 class ClaimSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+    user = serializers.PrimaryKeyRelatedField(read_only=True)  # Store user as ID
+    date_submitted = serializers.DateTimeField(format='iso-8601',read_only=True)
 
     class Meta:
         model = Claim
-        fields = '__al__'
+        fields = ["id","user","policy", "amount_requested","status","date_submitted","remarks"]
 
+    def create(self, validated_data):
+        request = self.context.get("request")
+        validated_data['user'] = request.user # Associate the authenticated user
+        return super().create(validated_data)
+    
+
+
+    
+ 
 # Payment Serializer
 class PaymentSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
 
     class Meta:
         model = Payment
-        fields = '__all__'
+        fields = ['id','user','policy','amount','payment_type','transaction_id','status','timestamp']
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        validated_data['user'] = request.user
+        return super().create(validated_data)
 
 # Audit log serializer
 class AuditLogSerializer(serializers.ModelSerializer):
@@ -38,4 +53,3 @@ class AuditLogSerializer(serializers.ModelSerializer):
         model = Auditlog
         fields = '__all__'
 
-        

@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth import get_user_model
 
+
+# User = get_user_model()
 
 
 # Custom User model
@@ -22,13 +25,13 @@ class User(AbstractUser):
         ('agent','Agent'),
     )
     role = models.CharField(max_length=20,choices=ROLE_CHOICES,default='policyholder')
-
+    
 
 # Insuarance policy model
 class Policy(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
-    premium_acccount = models.DecimalField(max_digits=10,decimal_places=2)
+    premium_amount = models.DecimalField(max_digits=10,decimal_places=2)
     coverage_details = models.TextField()
     terms_and_conditions = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -43,7 +46,7 @@ class Claim(models.Model):
         ('approved','Approved'),
         ('rejected','Rejected'),
     )
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    user = models.ForeignKey('api.User',on_delete=models.CASCADE)
     policy = models.ForeignKey(Policy,on_delete=models.CASCADE)
     amount_requested = models.DecimalField(max_digits=10,decimal_places=2)
     status = models.CharField(max_length=10,choices=STATUS_CHOICES,default='pending')

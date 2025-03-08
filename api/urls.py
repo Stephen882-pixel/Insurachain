@@ -11,3 +11,4 @@ router.register(r'audits',AuditLogViewSet)
 urlpatterns = [
     path('',include(router.urls))
 ]
+
